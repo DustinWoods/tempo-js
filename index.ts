@@ -1,1 +1,1 @@
-export * from './src/tempo';
+export * from './src/click-track';
