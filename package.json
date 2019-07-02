@@ -1,6 +1,6 @@
 {
   "name": "click-track",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "JavaScript utility for click track events.",
   "main": "dist/index",
   "typings": "dist/index",
@@ -22,7 +22,7 @@
     "type": "git",
     "url": "https://github.com/DustinWoods/click-track-js"
   },
-  "files": ["./dist"],
+  "files": ["dist/"],
   "author": "Dustin Woods <dustin@whatup.email>",
   "license": "MIT",
   "dependencies": {
