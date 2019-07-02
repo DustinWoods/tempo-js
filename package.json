@@ -1,0 +1,27 @@
+{
+  "name": "tempo-js",
+  "version": "0.1.0",
+  "description": "JavaScript utilities for music tempos.T",
+  "main": "dist/index",
+  "typings": "dist/index",
+  "scripts": {
+    "compile": "npm run clean && tsc -p .",
+    "watch": "tsc -w -p .",
+    "clean": "rm -rf dist",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "tempo",
+    "rhythm",
+    "music",
+    "metronome"
+  ],
+  "author": "Dustin Woods <dustin@whatup.email>",
+  "license": "MIT",
+  "dependencies": {
+    "rxjs": "^6.5.2"
+  },
+  "devDependencies": {
+    "typescript": "^3.5.2"
+  }
+}
