@@ -5,6 +5,7 @@
   "main": "dist/index",
   "typings": "dist/index",
   "scripts": {
+    "prepublish": "npm run compile",
     "compile": "npm run clean && tsc -p .",
     "watch": "tsc -w -p .",
     "clean": "rm -rf dist",
