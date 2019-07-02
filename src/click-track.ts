@@ -16,7 +16,7 @@ function calculateMeasureBeat(time: number, bpm: number, signature: TimeSignatur
   return beat % signature.beats
 }
 
-export default class ClickTrack {
+export class ClickTrack {
   private currentTime: number; // in seconds
   playing: boolean;
   time: BehaviorSubject<number>;
