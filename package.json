@@ -22,6 +22,7 @@
     "type": "git",
     "url": "https://github.com/DustinWoods/click-track-js"
   },
+  "files": ["./dist"],
   "author": "Dustin Woods <dustin@whatup.email>",
   "license": "MIT",
   "dependencies": {
