@@ -20,3 +20,4 @@ Create JavaScript event emitter in browser for a click track. Specify tempo and 
  - [ ] Publish code examples
  - [ ] Tempo maps for varying tempos
  - [ ] Voice/instrument tracks
+ - [ ] Include minified/targeted build
