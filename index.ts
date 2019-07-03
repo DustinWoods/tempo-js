@@ -1,1 +1,3 @@
-export * from './lib/click-track';
+import {ClickTrack} from './lib/click-track';
+
+export default ClickTrack;
