@@ -2,13 +2,16 @@
   "name": "click-track",
   "version": "0.1.3",
   "description": "JavaScript utility for click track events.",
-  "main": "dist/index",
-  "typings": "dist/index",
+  "typings": "./dist/main.d.ts",
+  "main": "dist/click-track.cjs.js",
+  "module": "dist/click-track.esm.js",
+  "browser": "dist/click-track.umd.js",
   "scripts": {
-    "prepublish": "npm run compile",
-    "compile": "npm run clean && tsc -p .",
-    "watch": "tsc -w -p .",
-    "clean": "rm -rf dist",
+    "prepublish": "npm run build",
+    "build": "npm run build:clean && npm run build:rollup",
+    "build:clean": "rm -rf dist",
+    "build:rollup": "rollup -c",
+    "watch": "rollup -c -w",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -22,13 +25,22 @@
     "type": "git",
     "url": "https://github.com/DustinWoods/click-track-js"
   },
-  "files": ["dist/"],
+  "files": [
+    "dist/"
+  ],
   "author": "Dustin Woods <dustin@whatup.email>",
   "license": "MIT",
   "dependencies": {
-    "rxjs": "^6.5.2"
+    "rxjs": "^6.5.2",
+    "rxjs-compat": "^6.5.2"
   },
   "devDependencies": {
+    "rollup": "^1.16.4",
+    "rollup-plugin-commonjs": "^10.0.1",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "rollup-plugin-typescript2": "^0.21.2",
+    "ts-node": "^8.3.0",
+    "tslib": "^1.10.0",
     "typescript": "^3.5.2"
   }
 }

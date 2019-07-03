@@ -1,16 +1,19 @@
 {
   "compilerOptions": {
     "noImplicitAny": true,
+    "strict": true,
     "strictNullChecks": true,
-    "module": "commonjs",
+    "module": "ESNext",
+    "esModuleInterop": true,
     "target": "es5",
-    "outDir": "./dist",
+    "outDir": "dist",
     "moduleResolution": "node",
+    "sourceMap": true,
     "declaration": true,
     "lib": ["es2015", "dom"]
   },
   "include": [
     "lib/**/*.ts",
-    "index.ts"
+    "index.js"
   ],
 }
