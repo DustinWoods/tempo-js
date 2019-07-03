@@ -1,52 +1,72 @@
-import { TimeSignature } from "./time-signature";
 import { BehaviorSubject, Observable } from "rxjs";
 import { map } from 'rxjs/operators';
+import { DelegatedEventTarget } from "./delegated-event-target";
 
-function calculateBeat(time: number, bpm: number): number {
-  return time * (bpm / 60);
+function calculateBeat(time: number, tempo: number): number {
+  return time * (tempo / 60);
 }
 
-function calculateMeasure(time: number, bpm: number, signature: TimeSignature): number {
+function calculateMeasure(time: number, bpm: number, beats: number): number {
   const beat = calculateBeat(time, bpm);
-  return beat / signature.beats
+  return beat / beats
 }
 
-function calculateMeasureBeat(time: number, bpm: number, signature: TimeSignature): number {
+function calculateMeasureBeat(time: number, bpm: number, beats: number): number {
   const beat = calculateBeat(time, bpm);
-  return beat % signature.beats
+  return beat % beats
 }
 
-export class ClickTrack {
-  private currentTime: number; // in seconds
-  playing: boolean;
+type ClickTrackOptions = {
+  tempo: number;
+  beats?: number;
+  length?: number;
+  loop?: boolean;
+}
+
+export class ClickTrack extends DelegatedEventTarget {
+  currentTime: number = 0; // in seconds
+  playing: boolean = false;
   time: BehaviorSubject<number>;
   beat: Observable<number>;
   measure: Observable<number>;
   measureBeat: Observable<number>;
+  tempo: number = 0;
+  beats: number = 4;
+  length: number = Infinity;
+  loop: boolean = true;
 
-  constructor(public bpm: number, public signature: TimeSignature, public length: number = Infinity, public loop: boolean = false) {
+  constructor(options: ClickTrackOptions) {
+    super();
 
-    this.currentTime = 0;
-    this.playing = true;
+    Object.assign(<ClickTrack>this, options);
+
+    if(this.tempo === 0 || this.tempo < 0) {
+      throw new Error(`Invalid tempo (${this.tempo}), must be greater than 0.`);
+    }
+
     this.time = new BehaviorSubject(0);
 
     this.beat = this.time.pipe(
       map<number, number>((value: number) => {
-        return calculateBeat(value, this.bpm);
+        return calculateBeat(value, this.tempo);
       })
     );
 
     this.measure = this.time.pipe(
       map<number, number>((value: number) => {
-        return calculateMeasure(value, this.bpm, this.signature);
+        return calculateMeasure(value, this.tempo, this.beats);
       })
     );
 
     this.measureBeat = this.time.pipe(
       map<number, number>((value: number) => {
-        return calculateMeasureBeat(value, this.bpm, this.signature);
+        return calculateMeasureBeat(value, this.tempo, this.beats);
       })
     );
+
+    this.beat.subscribe((beatNumber) => {
+      this.dispatchEvent(new Event('beat'));
+    });
 
   }
 
