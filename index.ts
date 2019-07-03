@@ -1,1 +1,1 @@
-export * from './src/click-track';
+export * from './lib/click-track';
