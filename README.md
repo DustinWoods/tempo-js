@@ -12,13 +12,13 @@ Create JavaScript event emitter in browser for a click track. Specify tempo and 
  - Typings for Typescript
 
 ### TODO
- - [ ] Remove dependencies (rxjs)
+ - [x] Remove dependencies (rxjs)
  - [ ] Tests
- - [ ] Implement event triggers for beats and bars
+ - [x] Implement event triggers for beats and bars
  - [ ] Implement event triggers for start/stop/repeat click track
  - [ ] Parameter for track offset
  - [ ] Add built-in ticker
- - [ ] Add support for custom ticker
+ - [x] Add support for custom ticker
  - [ ] Option to sync with html5 audio or video
  - [ ] Publish code examples
  - [ ] Tempo maps for varying tempos
