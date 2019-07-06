@@ -90,6 +90,6 @@ export class ClickTrack extends DelegatedEventTarget {
       return;
     }
 
-    this.setTime(this.currentTime + delta / 60);
-  };
+    this.setTime(this.currentTime + delta);
+  }
 }
