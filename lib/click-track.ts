@@ -48,14 +48,17 @@ export class ClickTrack {
     this.events.get(event).dispatch(this, arg);
   }
 
+  // Adds event listener
   on(event: ClickTrackEventName, fn: IEventHandler<ClickTrack, ClickEvent>): void {
     this.events.get(event).subscribe(fn);
   }
 
+  // Removes event listener
   off(event: ClickTrackEventName, fn: IEventHandler<ClickTrack, ClickEvent>): void {
     this.events.get(event).unsubscribe(fn);
   }
 
+  // Sets the time in seconds
   setTime(time: number): void {
 
     // Handling end of track. Maybe loop to the beginning
@@ -92,25 +95,9 @@ export class ClickTrack {
   }
 
   private getClicksBetween(fromClick: Click, toClick: Click): Array<ClickEvent> {
-    // 0 -> 5
-    // [0, 1, 2, 3, 4, 5]
 
-    // 0.1 -> 5
-    // [1, 2, 3, 4, 5]
-
-    // 0.1 -> 5.1
-    // [1, 2, 3, 4, 5]
-
-    // 0.1 -> 0.5
-    // []
-
-    // 0.1 -> 1.1
-    // [1]
-
-    // ciel(from) to floor(to)
-
-    // @TODO - check if track has looped on itself
     if(fromClick.beat > toClick.beat) {
+      // @TODO - check if track has looped on itself
       throw new Error('Implement calculating clicks for looped track');
     }
 
@@ -145,6 +132,7 @@ export class ClickTrack {
 
   }
 
+  // Advance time by delta seconds
   tick(delta: number): void {
     if(!this.playing) {
       return;
