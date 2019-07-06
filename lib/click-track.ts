@@ -118,7 +118,7 @@ export class ClickTrack {
     const fromBeat = Math.max(0, Math.ceil(fromClick.beat));
     const toBeat = Math.floor(toClick.beat);
 
-    // Beat hasn't advanced an whole number yet
+    // Beat hasn't advanced a whole number yet
     if(fromBeat > toBeat) {
       return [];
     }
