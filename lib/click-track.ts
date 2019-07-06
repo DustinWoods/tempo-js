@@ -4,6 +4,7 @@ import { ClickEvent } from './definitions/click-event';
 
 type ClickTrackOptions = {
   tempo: number;
+  offset?: number; // The time beat 1 starts
   beats?: number;
   length?: number;
   loop?: boolean;
@@ -15,9 +16,10 @@ export class ClickTrack {
   playing: boolean = false;
   tempo: number = 0;
   beats: number = 4;
+  offset: number = 0;
   length: number = Infinity;
   loop: boolean = true;
-  private currentClick: Click;
+  currentClick: Click;
   private previousClick: Click;
   private tempoBPS: number = 0;
   private events = new EventList<ClickTrack, ClickEvent>();
@@ -61,11 +63,12 @@ export class ClickTrack {
   // Sets the time in seconds
   setTime(time: number): void {
 
+    const offsetTime = time - this.offset;
+
     // Handling end of track. Maybe loop to the beginning
     if(time > this.length) {
       if(!this.loop) {
         time = this.length;
-        this.playing = false;
       } else {
         time = time % this.length;
       }
@@ -75,22 +78,27 @@ export class ClickTrack {
     this.previousClick = this.currentClick;
 
     // Calculate current click
-    const beat = time * this.tempoBPS;
+    const beat = offsetTime * this.tempoBPS;
     const bar = beat / this.beats;
     const beatBar = beat % this.beats;
     this.currentClick = {
-      time,
+      time: offsetTime,
       beat,
       bar,
       beatBar,
     };
 
-    // Get all events that occurred between prior click and current click
-    const clicksBetween = this.getClicksBetween(this.previousClick, this.currentClick);
+    if(this.playing) {
+      // @TODO check if set time is looped around ending
+      // @TODO check if at end, and needing to stop
 
-    // Loop through clicksBetween and dispatch
-    for(let i = 0; i < clicksBetween.length; i++) {
-      this.dispatch("beat", clicksBetween[i]);
+      // Get all events that occurred between prior click and current click
+      const clicksBetween = this.getClicksBetween(this.previousClick, this.currentClick);
+
+      // Loop through clicksBetween and dispatch
+      for(let i = 0; i < clicksBetween.length; i++) {
+        this.dispatch("beat", clicksBetween[i]);
+      }
     }
   }
 
@@ -98,7 +106,8 @@ export class ClickTrack {
 
     if(fromClick.beat > toClick.beat) {
       // @TODO - check if track has looped on itself
-      throw new Error('Implement calculating clicks for looped track');
+      //throw new Error('Implement calculating clicks for looped track');
+      return [];
     }
 
     // Beats are the same
@@ -106,7 +115,7 @@ export class ClickTrack {
       return [];
     }
 
-    const fromBeat = Math.ceil(fromClick.beat);
+    const fromBeat = Math.max(0, Math.ceil(fromClick.beat));
     const toBeat = Math.floor(toClick.beat);
 
     // Beat hasn't advanced an whole number yet
@@ -116,10 +125,10 @@ export class ClickTrack {
 
     const clickEvents: Array<ClickEvent> = [];
 
-    for (var i = fromBeat; i <= toBeat; i++) {
+    for (let i = fromBeat; i <= toBeat; i++) {
       const time = i / this.tempoBPS;
       clickEvents.push({
-        time,
+        time: time,
         beat: i,
         bar: Math.floor(i / this.beats),
         beatBar: ((i / this.beats) % 1) * this.beats,
