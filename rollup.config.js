@@ -29,7 +29,7 @@ export default [
 	// `file` and `format` for each target)
 	{
 		input: 'index.ts',
-		external: ['rxjs', 'rxjs/operators'],
+		external: ['ste-events'],
 		plugins: [
 			typescript() // so Rollup can convert TypeScript to JavaScript
 		],

@@ -31,8 +31,7 @@
   "author": "Dustin Woods <dustin@whatup.email>",
   "license": "MIT",
   "dependencies": {
-    "rxjs": "^6.5.2",
-    "rxjs-compat": "^6.5.2"
+    "ste-events": "^1.5.2"
   },
   "devDependencies": {
     "rollup": "^1.16.4",
