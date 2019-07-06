@@ -8,6 +8,9 @@ Create JavaScript event emitter in browser for a click track. Specify tempo and 
 ### Install
 `npm i click-track`
 
+### Features
+ - Typings for Typescript
+
 ### TODO
  - [ ] Remove dependencies (rxjs)
  - [ ] Tests
