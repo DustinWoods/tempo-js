@@ -1,16 +1,6 @@
 import { EventList, IEventHandler } from 'ste-events';
-
-interface Click {
-  beat: number,
-  bar: number,
-  time: number,
-  beatBar: number,
-}
-
-interface ClickEvent extends Click {
-  timeDifference: number,
-  beatDifference: number,
-}
+import { Click } from './definitions/click';
+import { ClickEvent } from './definitions/click-event';
 
 type ClickTrackOptions = {
   tempo: number;
