@@ -20,9 +20,10 @@ Create JavaScript event emitter in browser for a click track. Specify tempo and 
  - [x] Implement event triggers for beats and bars
  - [ ] Implement event triggers for start/stop/repeat click track
  - [x] Parameter for track offset
- - [ ] Add built-in ticker
+ - [x] Add built-in ticker
  - [x] Add support for custom ticker
- - [ ] Option to sync with html5 audio or video
+ - [x] Option to sync with html5 audio or video
+ - [x] Option to sync with youtube iframe player
  - [ ] Publish code examples
  - [ ] Tempo maps for varying tempos
  - [ ] Voice/instrument tracks
