@@ -4,10 +4,13 @@ type timerUpdateCallback = (time: number) => void;
 
 export type YTPlayer = {
   getCurrentTime: () => number;
+  getDuration: () => number;
 };
 
 export function isYTPlayer(obj: any): obj is YTPlayer {
-  return typeof obj === "object" && typeof obj.getCurrentTime === "function";
+  return typeof obj === "object"
+  && typeof obj.getCurrentTime === "function"
+  && typeof obj.getDuration === "function";
 }
 
 export class YTTimer implements ITimer {

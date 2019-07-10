@@ -6,7 +6,7 @@ export class MediaTimer implements ITimer {
   private callbacks: Array<timerUpdateCallback> = [];
   private position: number = 0;
 
-  constructor(public mediaElement: HTMLAudioElement | HTMLVideoElement) {
+  constructor(public mediaElement: HTMLMediaElement) {
     requestAnimationFrame(this.updateTime.bind(this));
   }
 

@@ -10,15 +10,15 @@ type BaseClickTrackOptions = {
   tempo: number;
   offset?: number;
   beats?: number;
-  length?: number;
-  loop?: boolean;
 }
 
 type ClickTrackOptionVariants = {
-  timerSource: HTMLAudioElement | HTMLVideoElement
+  timerSource: HTMLMediaElement,
 } | {
   timerSource: undefined,
   autostart?: boolean,
+  length?: number;
+  loop?: boolean;
 } | {
   timerSource: ITimer,
 } | {
@@ -34,7 +34,7 @@ export class ClickTrack {
   tempo: number = 0;
   beats: number = 4;
   offset: number = 0;
-  length: number = Infinity;
+  length: number;
   loop: boolean = true;
   currentClick: Click;
   private previousClick: Click;
@@ -64,20 +64,23 @@ export class ClickTrack {
     if(isTimer(options.timerSource)) {
       // Custom timer
       options.timerSource.onUpdate(this.setTime.bind(this));
+      this.length = Infinity;
     } else if(options.timerSource === undefined) {
       // Basic timer
-      const timer = new BasicTimer();
-      options.autostart;
+      const timer = new BasicTimer(options.autostart);
       timer.onUpdate(this.setTime.bind(this));
+      this.length = options.length || Infinity;
     } else if(isYTPlayer(options.timerSource)) {
       // YouTube Timer for YouTube iFrame API player
       const timer = new YTTimer(options.timerSource);
       timer.onUpdate(this.setTime.bind(this));
+      this.length = options.timerSource.getDuration();
     } else {
       // Media Timer (for Audio/Video)
       // @TODO - listen for timerSource destroy and remove listener
       const timer = new MediaTimer(options.timerSource);
       timer.onUpdate(this.setTime.bind(this));
+      this.length = options.timerSource.duration;
     }
   }
 
