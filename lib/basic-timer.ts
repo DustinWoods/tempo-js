@@ -8,7 +8,7 @@ export class BasicTimer implements ITimer {
   private position: number = 0;
   private animationFrameId?: number = undefined;
 
-  constructor(autostart = false) {
+  constructor(public autostart = false, public length = Infinity, public loop = true) {
     if(autostart) {
       this.start();
     }
@@ -29,16 +29,25 @@ export class BasicTimer implements ITimer {
     const now = Date.now();
     const position = (now - this.startTimeMarker) / 1000;
 
-    try {
-      if(position !== this.position) {
-        this.position = position;
+    if(position !== this.position) {
+      this.position = position;
+
+      if(this.position > this.length) {
+        if(!this.loop) {
+          this.position = this.length;
+        } else {
+          this.position = this.position % this.length;
+        }
+      }
+
+      try {
         for (let i = 0; i < this.callbacks.length; i++) {
           this.callbacks[i](position);
         }
+      } finally {
+        // Regardless of success, keep timer going
+        requestAnimationFrame(this.updateTime.bind(this));
       }
-    } finally {
-      // Regardless of success, keep timer going
-      requestAnimationFrame(this.updateTime.bind(this));
     }
   }
 

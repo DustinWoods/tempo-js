@@ -30,12 +30,10 @@ type ClickTrackOptions = BaseClickTrackOptions & ClickTrackOptionVariants;
 type ClickTrackEventName = "beat";// | "bar" | "track" | "start" | "stop";
 
 export class ClickTrack {
-  playing: boolean = false;
-  tempo: number = 0;
-  beats: number = 4;
-  offset: number = 0;
+  tempo: number;
+  beats: number;
+  offset: number;
   length: number;
-  loop: boolean = true;
   currentClick: Click;
   private previousClick: Click;
   private tempoBPS: number = 0;
@@ -49,7 +47,9 @@ export class ClickTrack {
     }
 
     // Assign options and defaults
-    Object.assign(<ClickTrack>this, options);
+    this.tempo = options.tempo;
+    this.beats = options.beats || 4;
+    this.offset = options.offset || 0;
 
     // @TODO - update this if this.tempo changes
     this.tempoBPS = this.tempo / 60;
@@ -68,7 +68,7 @@ export class ClickTrack {
 
     } else if(options.timerSource === undefined) {
       // Basic timer
-      const timer = new BasicTimer(options.autostart);
+      const timer = new BasicTimer(options.autostart, options.length, options.loop);
       timer.onUpdate(this.setTime.bind(this));
       this.length = options.length || Infinity;
 
@@ -107,15 +107,6 @@ export class ClickTrack {
 
     const offsetTime = time - this.offset;
 
-    // Handling end of track. Maybe loop to the beginning
-    if(time > this.length) {
-      if(!this.loop) {
-        time = this.length;
-      } else {
-        time = time % this.length;
-      }
-    }
-
     // Set previous click pointer to current click before we change current click
     this.previousClick = this.currentClick;
 
@@ -130,17 +121,15 @@ export class ClickTrack {
       beatBar,
     };
 
-    if(this.playing) {
-      // @TODO check if set time is looped around ending
-      // @TODO check if at end, and needing to stop
+    // @TODO check if set time is looped around ending
+    // @TODO check if at end, and needing to stop
 
-      // Get all events that occurred between prior click and current click
-      const clicksBetween = this.getClicksBetween(this.previousClick, this.currentClick);
+    // Get all events that occurred between prior click and current click
+    const clicksBetween = this.getClicksBetween(this.previousClick, this.currentClick);
 
-      // Loop through clicksBetween and dispatch
-      for(let i = 0; i < clicksBetween.length; i++) {
-        this.dispatch("beat", clicksBetween[i]);
-      }
+    // Loop through clicksBetween and dispatch
+    for(let i = 0; i < clicksBetween.length; i++) {
+      this.dispatch("beat", clicksBetween[i]);
     }
   }
 
