@@ -1,14 +1,31 @@
 import { EventList, IEventHandler } from 'ste-events';
 import { Click } from './definitions/click';
 import { ClickEvent } from './definitions/click-event';
+import { ITimer, isTimer } from './timer';
+import { MediaTimer } from './media-timer';
+import { BasicTimer } from './basic-timer';
+import { YTPlayer, isYTPlayer, YTTimer } from './youtube-timer';
 
-type ClickTrackOptions = {
+type BaseClickTrackOptions = {
   tempo: number;
-  offset?: number; // The time beat 1 starts
+  offset?: number;
   beats?: number;
   length?: number;
   loop?: boolean;
 }
+
+type ClickTrackOptionVariants = {
+  timerSource: HTMLAudioElement | HTMLVideoElement
+} | {
+  timerSource: undefined,
+  autostart?: boolean,
+} | {
+  timerSource: ITimer,
+} | {
+  timerSource: YTPlayer,
+}
+
+type ClickTrackOptions = BaseClickTrackOptions & ClickTrackOptionVariants;
 
 type ClickTrackEventName = "beat";// | "bar" | "track" | "start" | "stop";
 
@@ -26,24 +43,42 @@ export class ClickTrack {
 
   constructor(options: ClickTrackOptions) {
 
+    // Validate options
+    if(options.tempo === 0 || options.tempo < 0) {
+      throw new Error(`Invalid tempo (${options.tempo}), must be greater than 0.`);
+    }
+
+    // Assign options and defaults
     Object.assign(<ClickTrack>this, options);
 
     // @TODO - update this if this.tempo changes
     this.tempoBPS = this.tempo / 60;
 
-    if(this.tempo === 0 || this.tempo < 0) {
-      throw new Error(`Invalid tempo (${this.tempo}), must be greater than 0.`);
-    }
-
-    this.currentClick = {
+    this.currentClick = this.previousClick = {
       beat: 0,
       bar: 0,
       time: 0,
       beatBar: 0,
     };
 
-    this.previousClick = this.currentClick;
-
+    if(isTimer(options.timerSource)) {
+      // Custom timer
+      options.timerSource.onUpdate(this.setTime.bind(this));
+    } else if(options.timerSource === undefined) {
+      // Basic timer
+      const timer = new BasicTimer();
+      options.autostart;
+      timer.onUpdate(this.setTime.bind(this));
+    } else if(isYTPlayer(options.timerSource)) {
+      // YouTube Timer for YouTube iFrame API player
+      const timer = new YTTimer(options.timerSource);
+      timer.onUpdate(this.setTime.bind(this));
+    } else {
+      // Media Timer (for Audio/Video)
+      // @TODO - listen for timerSource destroy and remove listener
+      const timer = new MediaTimer(options.timerSource);
+      timer.onUpdate(this.setTime.bind(this));
+    }
   }
 
   private dispatch(event: ClickTrackEventName, arg: ClickEvent) {
@@ -139,14 +174,5 @@ export class ClickTrack {
 
     return clickEvents;
 
-  }
-
-  // Advance time by delta seconds
-  tick(delta: number): void {
-    if(!this.playing) {
-      return;
-    }
-
-    this.setTime(this.currentClick.time + delta);
   }
 }
