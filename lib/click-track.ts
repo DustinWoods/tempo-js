@@ -65,22 +65,26 @@ export class ClickTrack {
       // Custom timer
       options.timerSource.onUpdate(this.setTime.bind(this));
       this.length = Infinity;
+
     } else if(options.timerSource === undefined) {
       // Basic timer
       const timer = new BasicTimer(options.autostart);
       timer.onUpdate(this.setTime.bind(this));
       this.length = options.length || Infinity;
+
     } else if(isYTPlayer(options.timerSource)) {
       // YouTube Timer for YouTube iFrame API player
       const timer = new YTTimer(options.timerSource);
       timer.onUpdate(this.setTime.bind(this));
       this.length = options.timerSource.getDuration();
+
     } else {
       // Media Timer (for Audio/Video)
       // @TODO - listen for timerSource destroy and remove listener
       const timer = new MediaTimer(options.timerSource);
       timer.onUpdate(this.setTime.bind(this));
       this.length = options.timerSource.duration;
+
     }
   }
 
