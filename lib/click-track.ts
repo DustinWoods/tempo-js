@@ -1,7 +1,7 @@
 import { EventList, IEventHandler } from 'ste-events';
 import { Click } from './definitions/click';
 import { ClickEvent } from './definitions/click-event';
-import { ITimer, isTimer } from './timer';
+import { ITimer, isTimer } from './definitions/timer';
 import { MediaTimer } from './media-timer';
 import { BasicTimer } from './basic-timer';
 import { YTPlayer, isYTPlayer, YTTimer } from './youtube-timer';

@@ -1,4 +1,4 @@
-import { ITimer } from "./timer";
+import { ITimer } from "./definitions/timer";
 
 type timerUpdateCallback = (time: number) => void;
 
