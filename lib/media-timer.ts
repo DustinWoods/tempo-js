@@ -13,16 +13,16 @@ export class MediaTimer implements ITimer {
   updateTime() {
     const position = this.mediaElement.currentTime;
 
-    try {
-      if(position !== this.position) {
-        this.position = position;
+    if(position !== this.position) {
+      this.position = position;
+      try {
         for (let i = 0; i < this.callbacks.length; i++) {
           this.callbacks[i](position);
         }
+      } finally {
+        // Regardless of success, keep timer going
+        requestAnimationFrame(this.updateTime.bind(this));
       }
-    } finally {
-      // Regardless of success, keep timer going
-      requestAnimationFrame(this.updateTime.bind(this));
     }
   }
 
