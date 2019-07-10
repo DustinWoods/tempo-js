@@ -10,6 +10,8 @@ Create JavaScript event emitter in browser for a click track. Specify tempo and 
 
 ### Features
  - Typings for Typescript
+ - Sync with HTML Audio or Video element
+ - Sync with YouTube player
 
 ## Issues
  - [x] Using offset option and scrubbing audio begins to offset the click track (Turned out to be the file was reporting incorrect audio position. Nothing to do with offset. Exported as .ogg and fixed. Maybe to do with .mp3)
@@ -27,4 +29,4 @@ Create JavaScript event emitter in browser for a click track. Specify tempo and 
  - [ ] Publish code examples
  - [ ] Tempo maps for varying tempos
  - [ ] Voice/instrument tracks
- - [ ] Include minified/targeted build
+ - [x] Include minified/targeted build
