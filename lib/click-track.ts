@@ -107,13 +107,13 @@ export class ClickTrack {
 
     const offsetTime = time - this.offset;
 
-    // Set previous click pointer to current click before we change current click
-    this.previousClick = this.currentClick;
-
     // Calculate current click
     const beat = offsetTime * this.tempoBPS;
     const bar = beat / this.beats;
     const beatBar = beat % this.beats;
+
+    // Set previous click pointer to current click before we change current click
+    this.previousClick = this.currentClick;
     this.currentClick = {
       time: offsetTime,
       beat,
