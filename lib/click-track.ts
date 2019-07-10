@@ -1,13 +1,16 @@
 import { EventList, IEventHandler } from 'ste-events';
 import { Click } from './definitions/click';
 import { ClickEvent } from './definitions/click-event';
+import { CueEvent } from './definitions/cue-event';
 import { ITimer, isTimer } from './definitions/timer';
 import { MediaTimer } from './media-timer';
 import { BasicTimer } from './basic-timer';
 import { YTPlayer, isYTPlayer, YTTimer } from './youtube-timer';
+import { CueSequence } from './definitions/cue-sequence';
 
 type BaseClickTrackOptions = {
   tempo: number;
+  cues?: CueSequence;
   offset?: number;
   beats?: number;
 }
@@ -27,17 +30,22 @@ type ClickTrackOptionVariants = {
 
 type ClickTrackOptions = BaseClickTrackOptions & ClickTrackOptionVariants;
 
-type ClickTrackEventName = "beat";// | "bar" | "track" | "start" | "stop";
+type ClickTrackEventClickName = "beat";// | "bar" | "track" | "start" | "stop";
+type ClickTrackEventCueName = "cue";
+type ClickTrackEventName = ClickTrackEventClickName | ClickTrackEventCueName;
 
 export class ClickTrack {
   tempo: number;
   beats: number;
   offset: number;
   length: number;
+  cues?: CueSequence;
   currentClick: Click;
+  private previousCue: number;
+  private currentCue: number;
   private previousClick: Click;
   private tempoBPS: number = 0;
-  private events = new EventList<ClickTrack, ClickEvent>();
+  private events = new EventList<ClickTrack, CueEvent | ClickEvent>();
 
   constructor(options: ClickTrackOptions) {
 
@@ -60,6 +68,11 @@ export class ClickTrack {
       time: 0,
       beatBar: 0,
     };
+
+    if(options.cues) {
+      this.cues = options.cues;
+    }
+    this.currentCue = this.previousCue = -1;
 
     if(isTimer(options.timerSource)) {
       // Custom timer
@@ -88,18 +101,26 @@ export class ClickTrack {
     }
   }
 
-  private dispatch(event: ClickTrackEventName, arg: ClickEvent) {
-    this.events.get(event).dispatch(this, arg);
+  private dispatch(event: ClickTrackEventClickName, arg: ClickEvent): void;
+  private dispatch(event: ClickTrackEventCueName, arg: CueEvent): void;
+  private dispatch(event: ClickTrackEventName, arg: ClickEvent | CueEvent): void {
+    this.events.get(event).dispatchAsync(this, arg);
   }
 
   // Adds event listener
-  on(event: ClickTrackEventName, fn: IEventHandler<ClickTrack, ClickEvent>): void {
-    this.events.get(event).subscribe(fn);
+  on(event: ClickTrackEventClickName, fn: IEventHandler<ClickTrack, ClickEvent>): void;
+  on(event: ClickTrackEventCueName, fn: IEventHandler<ClickTrack, CueEvent>): void;
+  on(event: ClickTrackEventName, fn: CallableFunction): void {
+    // @TODO - avoid type assertion here.
+    this.events.get(event).subscribe(fn as IEventHandler<ClickTrack, CueEvent | ClickEvent>);
   }
 
   // Removes event listener
-  off(event: ClickTrackEventName, fn: IEventHandler<ClickTrack, ClickEvent>): void {
-    this.events.get(event).unsubscribe(fn);
+  off(event: ClickTrackEventClickName, fn: IEventHandler<ClickTrack, ClickEvent>): void;
+  off(event: ClickTrackEventCueName, fn: IEventHandler<ClickTrack, CueEvent>): void;
+  off(event: ClickTrackEventName, fn: CallableFunction): void {
+    // @TODO - avoid type assertion here.
+    this.events.get(event).unsubscribe(fn as IEventHandler<ClickTrack, CueEvent | ClickEvent>);
   }
 
   // Sets the time in seconds
@@ -112,6 +133,24 @@ export class ClickTrack {
     const bar = beat / this.beats;
     const beatBar = beat % this.beats;
 
+    if(this.cues) {
+      // Calculate current cue
+      for(var calcCue = Math.max(0, this.currentCue); calcCue < this.cues.length && this.cues[calcCue] < offsetTime; calcCue++);
+
+      this.previousCue = this.currentCue;
+      this.currentCue = calcCue - 1;
+
+      if(this.currentCue !== -1 && this.currentCue !== this.previousCue) {
+        for(let i = this.previousCue + 1; i <= this.currentCue; i++) {
+          this.dispatch("cue", {
+            time: this.cues[i],
+            cueIndex: i,
+            timeDifference: offsetTime - this.cues[i],
+          });
+        }
+      }
+    }
+
     // Set previous click pointer to current click before we change current click
     this.previousClick = this.currentClick;
     this.currentClick = {
@@ -120,9 +159,6 @@ export class ClickTrack {
       bar,
       beatBar,
     };
-
-    // @TODO check if set time is looped around ending
-    // @TODO check if at end, and needing to stop
 
     // Get all events that occurred between prior click and current click
     const clicksBetween = this.getClicksBetween(this.previousClick, this.currentClick);
