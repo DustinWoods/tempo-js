@@ -15,6 +15,7 @@ Create JavaScript event emitter in browser for a click track. Specify tempo and 
 
 ## Issues
  - [x] Using offset option and scrubbing audio begins to offset the click track (Turned out to be the file was reporting incorrect audio position. Nothing to do with offset. Exported as .ogg and fixed. Maybe to do with .mp3)
+ - [ ] requestAnimationFrame in event callback doesn't last long enough for classes to be attached to DOM element
 
 ### TODO
  - [x] Remove dependencies (rxjs)
