@@ -1,5 +1,4 @@
 import { EventList, IEventHandler } from 'ste-events';
-import { Click } from './definitions/click';
 import { ClickEvent } from './definitions/click-event';
 import { CueEvent } from './definitions/cue-event';
 import { ITimer, isTimer } from './definitions/timer';
