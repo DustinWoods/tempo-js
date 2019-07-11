@@ -26,15 +26,12 @@ export class YTTimer implements ITimer {
 
     if(position !== this.position) {
       this.position = position;
-      try {
-        for (let i = 0; i < this.callbacks.length; i++) {
-          this.callbacks[i](position);
-        }
-      } finally {
-        // Regardless of success, keep timer going
-        requestAnimationFrame(this.updateTime.bind(this));
+      for (let i = 0; i < this.callbacks.length; i++) {
+        // @TODO - async callback to avoid handling errors
+        this.callbacks[i](position);
       }
     }
+    requestAnimationFrame(this.updateTime.bind(this));
   }
 
   onUpdate(cb: timerUpdateCallback): void {
