@@ -29,5 +29,6 @@ Create JavaScript event emitter in browser for a click track. Specify tempo and 
  - [x] Option to sync with youtube iframe player
  - [ ] Publish code examples
  - [ ] Tempo maps for varying tempos
+ - [ ] Include source maps in dist
  - [ ] Voice/instrument tracks
  - [x] Include minified/targeted build
