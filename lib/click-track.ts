@@ -40,10 +40,10 @@ export class ClickTrack {
   offset: number;
   length: number;
   cues?: CueSequence;
-  currentClick: Click;
+  private currentBeat: number;
+  private previousBeat: number;
   private previousCue: number;
   private currentCue: number;
-  private previousClick: Click;
   private tempoBPS: number = 0;
   private events = new EventList<ClickTrack, CueEvent | ClickEvent>();
 
@@ -62,17 +62,11 @@ export class ClickTrack {
     // @TODO - update this if this.tempo changes
     this.tempoBPS = this.tempo / 60;
 
-    this.currentClick = this.previousClick = {
-      beat: 0,
-      bar: 0,
-      time: 0,
-      beatBar: 0,
-    };
-
     if(options.cues) {
       this.cues = options.cues;
     }
     this.currentCue = this.previousCue = -1;
+    this.currentBeat = this.previousBeat = -1;
 
     if(isTimer(options.timerSource)) {
       // Custom timer
@@ -126,24 +120,16 @@ export class ClickTrack {
   // Sets the time in seconds
   setTime(time: number): void {
 
+    // Adjust for offset
     const offsetTime = time - this.offset;
 
-    // Calculate current click
-    const beat = offsetTime * this.tempoBPS;
-    const bar = beat / this.beats;
-    const beatBar = beat % this.beats;
-
     // Set previous click pointer to current click before we change current click
-    this.previousClick = this.currentClick;
-    this.currentClick = {
-      time: offsetTime,
-      beat,
-      bar,
-      beatBar,
-    };
+    this.previousBeat = this.currentBeat;
+    // Calculate current beat
+    this.currentBeat = offsetTime * this.tempoBPS;
 
     // Get all events that occurred between prior click and current click
-    const clickEvents = this.getClickEvents(this.previousClick, this.currentClick);
+    const clickEvents = this.getClickEvents(this.previousBeat, this.currentBeat, offsetTime);
 
     // Loop through clicksBetween and dispatch
     for(let i = 0; i < clickEvents.length; i++) {
@@ -184,37 +170,37 @@ export class ClickTrack {
     }
   }
 
-  private getClickEvents(fromClick: Click, toClick: Click): Array<ClickEvent> {
+  private getClickEvents(fromBeat: number, toBeat: number, toTime: number): Array<ClickEvent> {
 
-    if(fromClick.beat > toClick.beat) {
+    if(fromBeat > toBeat) {
       // @TODO - check if track has looped on itself
       return [];
     }
 
     // Beats are the same
-    if(fromClick.beat === toClick.beat) {
+    if(fromBeat === toBeat) {
       return [];
     }
 
-    const fromBeat = Math.max(0, Math.ceil(fromClick.beat));
-    const toBeat = Math.floor(toClick.beat);
+    const fromBeatInt = Math.max(0, Math.ceil(fromBeat));
+    const toBeatInt = Math.floor(toBeat);
 
     // Beat hasn't advanced a whole number yet
-    if(fromBeat > toBeat) {
+    if(fromBeatInt > toBeatInt) {
       return [];
     }
 
     const clickEvents: Array<ClickEvent> = [];
 
-    for (let i = fromBeat; i <= toBeat; i++) {
+    for (let i = fromBeatInt; i <= toBeatInt; i++) {
       const time = i / this.tempoBPS;
       clickEvents.push({
         time: time,
         beat: i,
         bar: Math.floor(i / this.beats),
         beatBar: ((i / this.beats) % 1) * this.beats,
-        timeDifference: toClick.time - time,
-        beatDifference: toClick.beat - i,
+        timeDifference: toTime - time,
+        beatDifference: toBeat - i,
       });
     }
 
