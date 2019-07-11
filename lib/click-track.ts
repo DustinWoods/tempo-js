@@ -133,24 +133,6 @@ export class ClickTrack {
     const bar = beat / this.beats;
     const beatBar = beat % this.beats;
 
-    if(this.cues) {
-      // Calculate current cue
-      for(var calcCue = Math.max(0, this.currentCue); calcCue < this.cues.length && this.cues[calcCue] < offsetTime; calcCue++);
-
-      this.previousCue = this.currentCue;
-      this.currentCue = calcCue - 1;
-
-      if(this.currentCue !== -1 && this.currentCue !== this.previousCue) {
-        for(let i = this.previousCue + 1; i <= this.currentCue; i++) {
-          this.dispatch("cue", {
-            time: this.cues[i],
-            cueIndex: i,
-            timeDifference: offsetTime - this.cues[i],
-          });
-        }
-      }
-    }
-
     // Set previous click pointer to current click before we change current click
     this.previousClick = this.currentClick;
     this.currentClick = {
@@ -161,19 +143,51 @@ export class ClickTrack {
     };
 
     // Get all events that occurred between prior click and current click
-    const clicksBetween = this.getClicksBetween(this.previousClick, this.currentClick);
+    const clickEvents = this.getClickEvents(this.previousClick, this.currentClick);
 
     // Loop through clicksBetween and dispatch
-    for(let i = 0; i < clicksBetween.length; i++) {
-      this.dispatch("beat", clicksBetween[i]);
+    for(let i = 0; i < clickEvents.length; i++) {
+      this.dispatch("beat", clickEvents[i]);
+    }
+
+    if(this.cues) {
+
+      // Where the calculated cue index will be stored
+      let calcCue: number;
+      // This for loop will set calcCue to the index of the next cue
+      for(
+        // Start iteration at current cue marker, but if less than 0 (-1) then start counter at 0
+        calcCue = Math.max(0, this.currentCue);
+        // Iterate until cue marker is greater than current time, or until no more cues
+        this.cues[calcCue] < offsetTime && calcCue < this.cues.length;
+        // Increment by one
+        calcCue++
+      );
+      // Subtract 1 to get the current cue index
+      calcCue -=1;
+
+      // Set previous cue pointer before changing current cue
+      this.previousCue = this.currentCue;
+      // Set current
+      this.currentCue = calcCue;
+
+      if(this.currentCue !== -1 && this.currentCue !== this.previousCue) {
+        for(let i = this.previousCue + 1; i <= this.currentCue; i++) {
+          const cueEvent = {
+            time: this.cues[i],
+            cueIndex: i,
+            timeDifference: offsetTime - this.cues[i],
+          };
+          this.dispatch("cue", cueEvent);
+        }
+      }
     }
   }
 
-  private getClicksBetween(fromClick: Click, toClick: Click): Array<ClickEvent> {
+  private getClickEvents(fromClick: Click, toClick: Click): Array<ClickEvent> {
 
     if(fromClick.beat > toClick.beat) {
       // @TODO - check if track has looped on itself
-      //throw new Error('Implement calculating clicks for looped track');
       return [];
     }
 
