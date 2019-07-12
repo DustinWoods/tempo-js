@@ -40,15 +40,18 @@ export class ClickTrack<C = any> {
     this.tempoBPS = this.tempo / 60;
 
     // Setup cues and cue data
-    this.cues = this.cueData = [];
+    this.cues = [];
+    this.cueData = [];
     if(options.cues) {
       const [cueLean, cueData] = separateCueSequence<C>(options.cues);
       this.cues = cueLean;
       this.cueData = cueData;
     }
 
-    this.currentCue = this.previousCue = -1;
-    this.currentBeat = this.previousBeat = -1;
+    this.currentCue = -1;
+    this.previousCue = -1;
+    this.currentBeat = -1;
+    this.previousBeat = -1;
 
     if(isTimer(options.timerSource)) {
       // Custom timer
