@@ -1,6 +1,4 @@
-import { ITimer } from "./definitions/timer";
-
-type timerUpdateCallback = (time: number) => void;
+import { UniversalTimer } from "./universal-timer";
 
 export type YTPlayer = {
   getCurrentTime: () => number;
@@ -13,28 +11,8 @@ export function isYTPlayer(obj: any): obj is YTPlayer {
   && typeof obj.getDuration === "function";
 }
 
-export class YTTimer implements ITimer {
-  private callbacks: Array<timerUpdateCallback> = [];
-  private position: number = 0;
-
+export class YTTimer extends UniversalTimer {
   constructor(public player: YTPlayer) {
-    requestAnimationFrame(this.updateTime.bind(this));
-  }
-
-  updateTime() {
-    const position = this.player.getCurrentTime();
-
-    if(position !== this.position) {
-      this.position = position;
-      for (let i = 0; i < this.callbacks.length; i++) {
-        // @TODO - async callback to avoid handling errors
-        this.callbacks[i](position);
-      }
-    }
-    requestAnimationFrame(this.updateTime.bind(this));
-  }
-
-  onUpdate(cb: timerUpdateCallback): void {
-    this.callbacks.push(cb);
+    super(() => player.getCurrentTime());
   }
 }
