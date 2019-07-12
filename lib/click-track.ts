@@ -5,11 +5,12 @@ import { ITimer, isTimer } from './definitions/timer';
 import { MediaTimer } from './media-timer';
 import { BasicTimer } from './basic-timer';
 import { YTPlayer, isYTPlayer, YTTimer } from './youtube-timer';
-import { CueSequence } from './definitions/cue-sequence';
+import { CueSequenceLean, CueSequence } from './definitions/cue-sequence';
+import { separateCueSequence } from './cue-utils';
 
 type BaseClickTrackOptions = {
   tempo: number;
-  cues?: CueSequence;
+  cues?: CueSequence<any>;
   offset?: number;
   beats?: number;
 }
@@ -34,11 +35,12 @@ type ClickTrackEventCueName = "cue";
 type ClickTrackEventName = ClickTrackEventClickName | ClickTrackEventCueName;
 
 export class ClickTrack {
-  tempo: number;
-  beats: number;
-  offset: number;
-  length: number;
-  cues?: CueSequence;
+  readonly tempo: number;
+  readonly beats: number;
+  readonly offset: number;
+  readonly length: number;
+  private cues: CueSequenceLean;
+  private cueData: Array<any>;
   private currentBeat: number;
   private previousBeat: number;
   private previousCue: number;
@@ -61,9 +63,14 @@ export class ClickTrack {
     // @TODO - update this if this.tempo changes
     this.tempoBPS = this.tempo / 60;
 
+    // Setup cues and cue data
+    this.cues = this.cueData = [];
     if(options.cues) {
-      this.cues = options.cues;
+      const [cueLean, cueData] = separateCueSequence(options.cues);
+      this.cues = cueLean;
+      this.cueData = cueData;
     }
+
     this.currentCue = this.previousCue = -1;
     this.currentBeat = this.previousBeat = -1;
 
@@ -158,12 +165,14 @@ export class ClickTrack {
 
       if(this.currentCue !== -1 && this.currentCue !== this.previousCue) {
         for(let i = this.previousCue + 1; i <= this.currentCue; i++) {
-          const cueEvent = {
+          const cueData = this.cueData[i] || null;
+          const event: CueEvent = {
             time: this.cues[i],
+            data: cueData,
             cueIndex: i,
             timeDifference: offsetTime - this.cues[i],
           };
-          this.dispatch("cue", cueEvent);
+          this.dispatch("cue", event);
         }
       }
     }
