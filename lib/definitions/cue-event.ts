@@ -1,6 +1,6 @@
-export interface CueEvent {
+export interface CueEvent<C> {
   time: number;
   cueIndex: number;
-  data: Object | null;
+  data: C | null;
   timeDifference: number,
 }

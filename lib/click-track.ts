@@ -8,9 +8,9 @@ import { YTPlayer, isYTPlayer, YTTimer } from './youtube-timer';
 import { CueSequenceLean, CueSequence } from './definitions/cue-sequence';
 import { separateCueSequence } from './cue-utils';
 
-type BaseClickTrackOptions = {
+type BaseClickTrackOptions<C> = {
   tempo: number;
-  cues?: CueSequence<any>;
+  cues?: CueSequence<C>;
   offset?: number;
   beats?: number;
 }
@@ -28,27 +28,25 @@ type ClickTrackOptionVariants = {
   timerSource: YTPlayer,
 }
 
-type ClickTrackOptions = BaseClickTrackOptions & ClickTrackOptionVariants;
-
 type ClickTrackEventClickName = "beat";// | "bar" | "track" | "start" | "stop";
 type ClickTrackEventCueName = "cue";
 type ClickTrackEventName = ClickTrackEventClickName | ClickTrackEventCueName;
 
-export class ClickTrack {
+export class ClickTrack<C = any> {
   readonly tempo: number;
   readonly beats: number;
   readonly offset: number;
   readonly length: number;
   private cues: CueSequenceLean;
-  private cueData: Array<any>;
+  private cueData: Array<C>;
   private currentBeat: number;
   private previousBeat: number;
   private previousCue: number;
   private currentCue: number;
   private tempoBPS: number = 0;
-  private events = new EventList<ClickTrack, CueEvent | ClickEvent>();
+  private events = new EventList<ClickTrack<C>, CueEvent<C> | ClickEvent>();
 
-  constructor(options: ClickTrackOptions) {
+  constructor(options: BaseClickTrackOptions<C> & ClickTrackOptionVariants) {
 
     // Validate tempo
     if(options.tempo === 0 || options.tempo < 0) {
@@ -66,7 +64,7 @@ export class ClickTrack {
     // Setup cues and cue data
     this.cues = this.cueData = [];
     if(options.cues) {
-      const [cueLean, cueData] = separateCueSequence(options.cues);
+      const [cueLean, cueData] = separateCueSequence<C>(options.cues);
       this.cues = cueLean;
       this.cueData = cueData;
     }
@@ -102,25 +100,25 @@ export class ClickTrack {
   }
 
   private dispatch(event: ClickTrackEventClickName, arg: ClickEvent): void;
-  private dispatch(event: ClickTrackEventCueName, arg: CueEvent): void;
-  private dispatch(event: ClickTrackEventName, arg: ClickEvent | CueEvent): void {
+  private dispatch(event: ClickTrackEventCueName, arg: CueEvent<C>): void;
+  private dispatch(event: ClickTrackEventName, arg: ClickEvent | CueEvent<C>): void {
     this.events.get(event).dispatchAsync(this, arg);
   }
 
   // Adds event listener
-  on(event: ClickTrackEventClickName, fn: IEventHandler<ClickTrack, ClickEvent>): void;
-  on(event: ClickTrackEventCueName, fn: IEventHandler<ClickTrack, CueEvent>): void;
+  on(event: ClickTrackEventClickName, fn: IEventHandler<ClickTrack<C>, ClickEvent>): void;
+  on(event: ClickTrackEventCueName, fn: IEventHandler<ClickTrack<C>, CueEvent<C>>): void;
   on(event: ClickTrackEventName, fn: CallableFunction): void {
     // @TODO - avoid type assertion here.
-    this.events.get(event).subscribe(fn as IEventHandler<ClickTrack, CueEvent | ClickEvent>);
+    this.events.get(event).subscribe(fn as IEventHandler<ClickTrack<C>, CueEvent<C> | ClickEvent>);
   }
 
   // Removes event listener
-  off(event: ClickTrackEventClickName, fn: IEventHandler<ClickTrack, ClickEvent>): void;
-  off(event: ClickTrackEventCueName, fn: IEventHandler<ClickTrack, CueEvent>): void;
+  off(event: ClickTrackEventClickName, fn: IEventHandler<ClickTrack<C>, ClickEvent>): void;
+  off(event: ClickTrackEventCueName, fn: IEventHandler<ClickTrack<C>, CueEvent<C>>): void;
   off(event: ClickTrackEventName, fn: CallableFunction): void {
     // @TODO - avoid type assertion here.
-    this.events.get(event).unsubscribe(fn as IEventHandler<ClickTrack, CueEvent | ClickEvent>);
+    this.events.get(event).unsubscribe(fn as IEventHandler<ClickTrack<C>, CueEvent<C> | ClickEvent>);
   }
 
   // Sets the time in seconds
@@ -165,8 +163,8 @@ export class ClickTrack {
 
       if(this.currentCue !== -1 && this.currentCue !== this.previousCue) {
         for(let i = this.previousCue + 1; i <= this.currentCue; i++) {
-          const cueData = this.cueData[i] || null;
-          const event: CueEvent = {
+          const cueData: C | null = this.cueData[i] || null;
+          const event: CueEvent<C> = {
             time: this.cues[i],
             data: cueData,
             cueIndex: i,
