@@ -50,7 +50,7 @@ export class ClickTrack {
 
   constructor(options: ClickTrackOptions) {
 
-    // Validate options
+    // Validate tempo
     if(options.tempo === 0 || options.tempo < 0) {
       throw new Error(`Invalid tempo (${options.tempo}), must be greater than 0.`);
     }
