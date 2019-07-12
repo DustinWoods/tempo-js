@@ -1,36 +1,14 @@
 import { EventList, IEventHandler } from 'ste-events';
 import { ClickEvent } from './definitions/click-event';
 import { CueEvent } from './definitions/cue-event';
-import { ITimer, isTimer } from './definitions/timer';
+import { isTimer } from './definitions/timer';
 import { MediaTimer } from './media-timer';
 import { BasicTimer } from './basic-timer';
-import { YTPlayer, isYTPlayer, YTTimer } from './youtube-timer';
-import { CueSequenceLean, CueSequence } from './definitions/cue-sequence';
+import { isYTPlayer, YTTimer } from './youtube-timer';
+import { CueSequenceLean } from './definitions/cue-sequence';
 import { separateCueSequence } from './cue-utils';
-
-type BaseClickTrackOptions<C> = {
-  tempo: number;
-  cues?: CueSequence<C>;
-  offset?: number;
-  beats?: number;
-}
-
-type ClickTrackOptionVariants = {
-  timerSource: HTMLMediaElement,
-} | {
-  timerSource: undefined,
-  autostart?: boolean,
-  length?: number;
-  loop?: boolean;
-} | {
-  timerSource: ITimer,
-} | {
-  timerSource: YTPlayer,
-}
-
-type ClickTrackEventClickName = "beat";// | "bar" | "track" | "start" | "stop";
-type ClickTrackEventCueName = "cue";
-type ClickTrackEventName = ClickTrackEventClickName | ClickTrackEventCueName;
+import { BaseClickTrackOptions, ClickTrackOptionVariants } from './definitions/click-track-options';
+import { ClickTrackEventClickName, ClickTrackEventName, ClickTrackEventCueName } from './definitions/click-track-event-names';
 
 export class ClickTrack<C = any> {
   readonly tempo: number;
