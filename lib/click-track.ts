@@ -12,15 +12,15 @@ import { ClickTrackEventClickName, ClickTrackEventName, ClickTrackEventCueName }
 
 export class ClickTrack<C = any> {
   readonly tempo: number;
-  readonly beats: number;
-  readonly offset: number;
-  readonly length: number;
-  private cues: CueSequenceLean;
-  private cueData: Array<C>;
-  private currentBeat: number;
-  private previousBeat: number;
-  private previousCue: number;
-  private currentCue: number;
+  readonly beats: number = 4;
+  readonly offset: number = 0;
+  readonly length: number = Infinity;
+  private cues: CueSequenceLean = [];
+  private cueData: Array<C> = [];
+  private currentBeat: number = -1;
+  private previousBeat: number = -1;
+  private currentCue: number = -1;
+  private previousCue: number = -1;
   private tempoBPS: number = 0;
   private events = new EventList<ClickTrack<C>, CueEvent<C> | ClickEvent>();
 
@@ -31,27 +31,23 @@ export class ClickTrack<C = any> {
       throw new Error(`Invalid tempo (${options.tempo}), must be greater than 0.`);
     }
 
-    // Assign options and defaults
     this.tempo = options.tempo;
-    this.beats = options.beats || 4;
-    this.offset = options.offset || 0;
-
-    // @TODO - update this if this.tempo changes
     this.tempoBPS = this.tempo / 60;
 
+    if(options.beats) {
+      this.beats = options.beats;
+    }
+
+    if(options.offset) {
+      this.offset = options.offset;
+    }
+
     // Setup cues and cue data
-    this.cues = [];
-    this.cueData = [];
     if(options.cues) {
       const [cueLean, cueData] = separateCueSequence<C>(options.cues);
       this.cues = cueLean;
       this.cueData = cueData;
     }
-
-    this.currentCue = -1;
-    this.previousCue = -1;
-    this.currentBeat = -1;
-    this.previousBeat = -1;
 
     if(isTimer(options.timerSource)) {
       // Custom timer
