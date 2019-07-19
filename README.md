@@ -29,4 +29,8 @@ Create JavaScript event emitter in browser for a click track. Specify tempo and 
  - [ ] Add calibration loop (begin anticipating the delay in code execution)
  - [ ] Handle @TODO's
  - [ ] Publish code examples
+   - [ ] Metronome
+   - [ ] Rhythm game
+   - [ ] YouTube video
  - [ ] Tempo maps for varying tempos
+ - [ ] Readme documentation
