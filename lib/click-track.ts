@@ -10,6 +10,7 @@ import { separateCueSequence } from './cue-utils';
 import { BaseClickTrackOptions, ClickTrackOptionVariants } from './definitions/click-track-options';
 import { ClickTrackEventClickName, ClickTrackEventName, ClickTrackEventCueName } from './definitions/click-track-event-names';
 
+// C represents the type of data to be used for cue events
 export class ClickTrack<C = any> {
   readonly tempo: number;
   readonly beats: number = 4;
