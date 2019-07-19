@@ -27,10 +27,10 @@ Create JavaScript event emitter in browser for a click track. Specify tempo and 
  - [x] Add support for custom ticker
  - [x] Option to sync with html5 audio or video
  - [x] Option to sync with youtube iframe player
- - [ ] Publish code examples
- - [ ] Tempo maps for varying tempos
  - [ ] Include source maps in dist
- - [ ] Voice/instrument tracks
+ - [ ] Cue tracks
  - [x] Include minified/targeted build
  - [ ] Add calibration loop (begin anticipating the delay in code execution)
  - [ ] Handle @TODO's
+ - [ ] Publish code examples
+ - [ ] Tempo maps for varying tempos
