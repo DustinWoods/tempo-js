@@ -119,7 +119,7 @@ export class ClickTrack<C = any> {
         // Start iteration at current cue marker, but if less than 0 (-1) then start counter at 0
         calcCue = Math.max(0, this.currentCue);
         // Iterate until cue marker is greater than current time, or until no more cues
-        this.cues[calcCue] < offsetTime && calcCue < this.cues.length;
+        this.cues[calcCue] < this.currentBeat && calcCue < this.cues.length;
         // Increment by one
         calcCue++
       );
