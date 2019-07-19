@@ -132,14 +132,17 @@ export class ClickTrack<C = any> {
       // Set current
       this.currentCue = calcCue;
 
+      // Traverse each cue from last 'til current
       if(this.currentCue !== -1 && this.currentCue !== this.previousCue) {
         for(let i = this.previousCue + 1; i <= this.currentCue; i++) {
           const cueData: C | null = this.cueData[i] || null;
+          const time = this.cues[i] / this.tempoBPS;
           const event: CueEvent<C> = {
-            time: this.cues[i],
+            time,
+            beat: this.cues[i],
             data: cueData,
-            cueIndex: i,
-            timeDifference: offsetTime - this.cues[i],
+            cue: i,
+            drag: this.currentBeat - this.cues[i],
           };
           this.dispatch("cue", event);
         }
@@ -174,10 +177,7 @@ export class ClickTrack<C = any> {
       clickEvents.push({
         time: time,
         beat: i,
-        bar: Math.floor(i / this.beats),
-        beatBar: ((i / this.beats) % 1) * this.beats,
-        timeDifference: toTime - time,
-        beatDifference: toBeat - i,
+        drag: toBeat - i,
       });
     }
 
