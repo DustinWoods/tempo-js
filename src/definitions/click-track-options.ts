@@ -2,7 +2,7 @@ import { CueSequence } from "./cue-sequence";
 import { ITimer } from "./timer";
 
 export type BaseClickTrackOptions<C> = {
-  tempo: number;
+  tempo?: number;
   cues?: CueSequence<C>;
   offset?: number;
   beats?: number;

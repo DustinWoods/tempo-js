@@ -11,7 +11,8 @@ import { UniversalTimer } from './universal-timer';
 
 // C represents the type of data to be used for cue events
 export class ClickTrack<C = any> {
-  readonly tempo: number;
+  readonly tempo: number = 60;
+  private tempoBPS: number = 1;
   readonly beats: number = 4;
   readonly offset: number = 0;
   readonly length: number = Infinity;
@@ -21,18 +22,18 @@ export class ClickTrack<C = any> {
   private previousBeat: number = -1;
   private currentCue: number = -1;
   private previousCue: number = -1;
-  private tempoBPS: number = 0;
   private events = new EventList<ClickTrack<C>, CueEvent<C> | ClickEvent>();
 
   constructor(options: BaseClickTrackOptions<C> & ClickTrackOptionVariants) {
 
-    // Validate tempo
-    if(options.tempo === 0 || options.tempo < 0) {
-      throw new Error(`Invalid tempo (${options.tempo}), must be greater than 0.`);
+    if(options.tempo !== undefined) {
+      // Validate tempo
+      if(options.tempo === 0 || options.tempo < 0) {
+        throw new Error(`Invalid tempo (${options.tempo}), must be greater than 0.`);
+      }
+      this.tempo = options.tempo;
+      this.tempoBPS = this.tempo / 60;
     }
-
-    this.tempo = options.tempo;
-    this.tempoBPS = this.tempo / 60;
 
     if(options.beats !== undefined) {
       this.beats = options.beats;
