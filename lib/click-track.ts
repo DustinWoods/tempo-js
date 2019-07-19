@@ -2,13 +2,12 @@ import { EventList, IEventHandler } from 'ste-events';
 import { ClickEvent } from './definitions/click-event';
 import { CueEvent } from './definitions/cue-event';
 import { isTimer } from './definitions/timer';
-import { MediaTimer } from './media-timer';
 import { BasicTimer } from './basic-timer';
-import { isYTPlayer, YTTimer } from './youtube-timer';
 import { CueSequenceLean } from './definitions/cue-sequence';
 import { separateCueSequence } from './cue-utils';
 import { BaseClickTrackOptions, ClickTrackOptionVariants } from './definitions/click-track-options';
 import { ClickTrackEventClickName, ClickTrackEventName, ClickTrackEventCueName } from './definitions/click-track-event-names';
+import { UniversalTimer } from './universal-timer';
 
 // C represents the type of data to be used for cue events
 export class ClickTrack<C = any> {
@@ -35,16 +34,16 @@ export class ClickTrack<C = any> {
     this.tempo = options.tempo;
     this.tempoBPS = this.tempo / 60;
 
-    if(options.beats) {
+    if(options.beats !== undefined) {
       this.beats = options.beats;
     }
 
-    if(options.offset) {
+    if(options.offset !== undefined) {
       this.offset = options.offset;
     }
 
     // Setup cues and cue data
-    if(options.cues) {
+    if(options.cues !== undefined) {
       const [cueLean, cueData] = separateCueSequence<C>(options.cues);
       this.cues = cueLean;
       this.cueData = cueData;
@@ -59,20 +58,13 @@ export class ClickTrack<C = any> {
       // Basic timer
       const timer = new BasicTimer(options.autostart, options.length, options.loop);
       timer.onUpdate(this.setTime.bind(this));
-      this.length = options.length || Infinity;
+      if(options.length !== undefined) {
+        this.length = options.length;
+      }
 
-    } else if(isYTPlayer(options.timerSource)) {
-      // YouTube Timer for YouTube iFrame API player
-      const timer = new YTTimer(options.timerSource);
+    } else if(typeof options.timerSource === "function") {
+      const timer = new UniversalTimer(options.timerSource);
       timer.onUpdate(this.setTime.bind(this));
-      this.length = options.timerSource.getDuration();
-
-    } else {
-      // Media Timer (for Audio/Video)
-      // @TODO - listen for timerSource destroy and remove listener
-      const timer = new MediaTimer(options.timerSource);
-      timer.onUpdate(this.setTime.bind(this));
-      this.length = options.timerSource.duration;
 
     }
   }

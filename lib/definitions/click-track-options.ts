@@ -1,6 +1,5 @@
 import { CueSequence } from "./cue-sequence";
 import { ITimer } from "./timer";
-import { YTPlayer } from "../youtube-timer";
 
 export type BaseClickTrackOptions<C> = {
   tempo: number;
@@ -10,8 +9,6 @@ export type BaseClickTrackOptions<C> = {
 }
 
 export type ClickTrackOptionVariants = {
-  timerSource: HTMLMediaElement,
-} | {
   timerSource: undefined,
   autostart?: boolean,
   length?: number;
@@ -19,5 +16,5 @@ export type ClickTrackOptionVariants = {
 } | {
   timerSource: ITimer,
 } | {
-  timerSource: YTPlayer,
+  timerSource: () => number,
 }
