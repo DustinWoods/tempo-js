@@ -27,6 +27,7 @@ Create JavaScript event emitter in browser for a click track. Specify tempo and 
  - [ ] Cue tracks
  - [x] Include minified/targeted build
  - [ ] Add calibration loop (begin anticipating the delay in code execution)
+ - [ ] Slave/master tracks to sync timers or media
  - [ ] Handle @TODO's
  - [ ] Publish code examples
    - [ ] Metronome
