@@ -67,7 +67,7 @@ export class ClickTrack<C = any> {
       this.timer = new UniversalTimer(options.timerSource);
 
     } else {
-      throw new Error('Constructing ClickTrack: Unknown option for timerSource.');
+      throw new Error('Constructing ClickTrack: Unknown value type for timerSource option.');
 
     }
 
