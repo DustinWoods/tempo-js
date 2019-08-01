@@ -32,5 +32,8 @@ Create JavaScript event emitter in browser for a click track. Specify tempo and 
    - [ ] Metronome
    - [ ] Rhythm game
    - [ ] YouTube video
+   - [ ] Cues for tweening
+   - [ ] Cues without tempo (ie 60bpm)
+   - [ ] Basic cue mapping tool
  - [ ] Tempo maps for varying tempos
  - [ ] Readme documentation
