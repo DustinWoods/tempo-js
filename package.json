@@ -12,7 +12,8 @@
     "build:clean": "rm -rf dist",
     "build:rollup": "rollup -c",
     "watch": "rollup -c -w",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "test:server": "rm -rf ./test/dist/ && npm run build && cp -R ./dist ./test/dist && npx http-server ./test"
   },
   "keywords": [
     "click track",
