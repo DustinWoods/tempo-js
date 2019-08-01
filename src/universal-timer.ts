@@ -1,33 +1,43 @@
 import { ITimer } from "./definitions/timer";
-
-type timerUpdateCallback = (time: number) => void;
+import { IEventHandler, EventDispatcher } from "ste-events";
 
 export class UniversalTimer implements ITimer {
-  private callbacks: Array<timerUpdateCallback> = [];
   private position: number = 0;
+  private onTick = new EventDispatcher<ITimer, number>();
+  private animationFrameId?: number = undefined;
 
   constructor(public getTimeFn: () => number) {
-    requestAnimationFrame(this.updateTime.bind(this));
+    this.animationFrameId = requestAnimationFrame(this.updateTime.bind(this));
   }
 
   updateTime() {
+    this.animationFrameId = undefined;
 
-    // @TODO - try/finally
     const position = this.getTimeFn();
 
-    if(position !== this.position) {
-      this.position = position;
-      for (let i = 0; i < this.callbacks.length; i++) {
-        // @TODO - async callback to avoid handling errors
-        this.callbacks[i](position);
+    try {
+      if(position !== this.position) {
+        this.position = position;
+        this.onTick.dispatch(this, position);
       }
+    } finally {
+      // Regardless of success, keep timer going
+      this.animationFrameId = requestAnimationFrame(this.updateTime.bind(this));
     }
-
-    // Regardless of success, keep timer going
-    requestAnimationFrame(this.updateTime.bind(this));
   }
 
-  onUpdate(cb: timerUpdateCallback): void {
-    this.callbacks.push(cb);
+  onUpdate(cb: IEventHandler<ITimer, number>): void {
+    this.onTick.subscribe(cb);
+  }
+
+  offUpdate(cb: IEventHandler<ITimer, number>): void {
+    this.onTick.unsubscribe(cb);
+  }
+
+  deconstruct(): void {
+    this.onTick.clear();
+    if(this.animationFrameId) {
+      cancelAnimationFrame(this.animationFrameId);
+    }
   }
 }

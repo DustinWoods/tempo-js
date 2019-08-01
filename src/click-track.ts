@@ -1,7 +1,7 @@
 import { EventList, IEventHandler } from 'ste-events';
 import { ClickEvent } from './definitions/click-event';
 import { CueEvent } from './definitions/cue-event';
-import { isTimer } from './definitions/timer';
+import { isTimer, ITimer } from './definitions/timer';
 import { BasicTimer } from './basic-timer';
 import { CueSequenceLean } from './definitions/cue-sequence';
 import { separateCueSequence } from './cue-utils';
@@ -93,7 +93,7 @@ export class ClickTrack<C = any> {
   }
 
   // Sets the time in seconds
-  setTime(time: number): void {
+  setTime(timer: ITimer, time: number): void {
 
     // Adjust for offset
     const offsetTime = time - this.offset;
