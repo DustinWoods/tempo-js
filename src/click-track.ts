@@ -16,6 +16,7 @@ export class ClickTrack<C = any> {
   readonly beats: number = 4;
   readonly offset: number = 0;
   readonly length: number = Infinity;
+  readonly timer: ITimer;
   private cues: CueSequenceLean = [];
   private cueData: Array<C> = [];
   private currentBeat: number = -1;
@@ -52,22 +53,25 @@ export class ClickTrack<C = any> {
 
     if(isTimer(options.timerSource)) {
       // Custom timer
-      options.timerSource.onUpdate(this.setTime.bind(this));
+      this.timer = options.timerSource;
       this.length = Infinity;
 
     } else if(options.timerSource === undefined) {
       // Basic timer
-      const timer = new BasicTimer(options.autostart, options.length, options.loop);
-      timer.onUpdate(this.setTime.bind(this));
+      this.timer = new BasicTimer(options.autostart, options.length, options.loop);
       if(options.length !== undefined) {
         this.length = options.length;
       }
 
     } else if(typeof options.timerSource === "function") {
-      const timer = new UniversalTimer(options.timerSource);
-      timer.onUpdate(this.setTime.bind(this));
+      this.timer = new UniversalTimer(options.timerSource);
+
+    } else {
+      throw new Error('Constructing ClickTrack: Unknown option for timerSource.');
 
     }
+
+    this.timer.onUpdate(this.setTime.bind(this));
   }
 
   private dispatch(event: ClickTrackEventClickName, arg: ClickEvent): void;
