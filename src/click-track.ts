@@ -77,11 +77,6 @@ export class ClickTrack<C = any> {
     this.timer.onUpdate(this.setTime.bind(this));
   }
 
-  // Dispatches event data
-  private dispatch<K extends Extract<keyof EventTypeMap<C>, string>>(event: K, arg: EventTypeMap<C>[K]) {
-    this.events.get(event).dispatchAsync(this, arg);
-  }
-
   // Adds event listener
   on<K extends Extract<keyof EventTypeMap<C>, string>>(event: K, fn: IEventHandler<this, EventTypeMap<C>[K]>): void {
     this.events.get(event).subscribe(fn);
@@ -103,58 +98,98 @@ export class ClickTrack<C = any> {
     // Calculate current beat
     this.currentBeat = offsetTime * this.tempoBPS;
 
-    // Get all events that occurred between prior click and current click
-    const clickEvents = this.getClickEvents(this.previousBeat, this.currentBeat, offsetTime);
+    // Process beat events only if listeners are listening
+    if(this.events.get("beat").count) {
+      // Get all events that occurred between prior click and current click
+      const clickEvents = this.getClickEvents(this.previousBeat, this.currentBeat, offsetTime);
 
-    // Loop through clicksBetween and dispatch
-    for(let i = 0; i < clickEvents.length; i++) {
-      this.dispatch("beat", clickEvents[i]);
+      // Loop through clicksBetween and dispatch
+      for(let i = 0; i < clickEvents.length; i++) {
+        this.events.get("beat").dispatchAsync(this, clickEvents[i]);
+      }
     }
 
-    if(this.cues) {
+    // Process cue events only if cues exist and listeners are listening
+    if(this.cues && this.events.get("cue").count) {
 
-      // Where the calculated cue index will be stored
-      let calcCue: number;
-      // This for loop will set calcCue to the index of the next cue
-      for(
-        // Start iteration at current cue marker, but if less than 0 (-1) then start counter at 0
-        calcCue = Math.max(0, this.currentCue);
-        // Iterate until cue marker is greater than current time, or until no more cues
-        this.cues[calcCue] < this.currentBeat && calcCue < this.cues.length;
-        // Increment by one
-        calcCue++
-      );
-      // Subtract 1 to get the current cue index
-      calcCue -=1;
-
+      // Start scanning for current cue from previous cue, only if track moved forward. Otherwise scan from the beginning.
+      const calcCueFrom = this.currentBeat > this.previousBeat ? this.previousCue : 0;
+      // Calculate current cue
+      const newCurrentCue = this.getCurrentCue(this.currentBeat, calcCueFrom);
       // Set previous cue pointer before changing current cue
       this.previousCue = this.currentCue;
-      // Set current
-      this.currentCue = calcCue;
+      // Set current cue
+      this.currentCue = newCurrentCue;
 
-      // Traverse each cue from last 'til current
-      if(this.currentCue !== -1 && this.currentCue !== this.previousCue) {
-        for(let i = this.previousCue + 1; i <= this.currentCue; i++) {
-          const cueData: C | null = this.cueData[i] || null;
-          const time = this.cues[i] / this.tempoBPS;
-          const event: CueEvent<C> = {
-            time,
-            beat: this.cues[i],
-            data: cueData,
-            cue: i,
-            drag: this.currentBeat - this.cues[i],
-          };
-          this.dispatch("cue", event);
-        }
+      // Get all cue events that occurred between previous cue and current cue
+      const cueEvents = this.getCueEvents(this.previousCue, this.currentCue, this.currentBeat);
+
+      // Loop through clicksBetween and dispatch
+      for(let i = 0; i < cueEvents.length; i++) {
+        this.events.get("cue").dispatchAsync(this, cueEvents[i]);
       }
     }
   }
 
+  // Determines the current cue marker based on the current beat
+  private getCurrentCue(currentBeat: number, startSearchAt: number): number {
+    // Where the calculated cue index will be stored
+    let calcCue: number;
+    // This for loop will set calcCue to the index of the next cue
+    for(
+      // Start iteration at current cue marker, but if less than 0 (-1) then start counter at 0
+      calcCue = Math.max(0, startSearchAt);
+      // Iterate until cue marker is greater than current time, or until no more cues
+      this.cues[calcCue] < currentBeat && calcCue < this.cues.length;
+      // Increment by one
+      calcCue++
+    );
+    // Subtract 1 to get the current cue index
+    calcCue -=1;
+
+    return calcCue;
+  }
+
+  private getCueEvents(fromCue:number, toCue: number, currentBeat: number): Array<CueEvent<C>> {
+
+    // At the beginning
+    if(toCue === -1) {
+      return [];
+    }
+
+    // Nothing changed
+    if(toCue === fromCue) {
+      return [];
+    }
+
+    // Moved backwards
+    if(toCue < fromCue) {
+      return [];
+    }
+
+    // Traverse each cue from last 'til current
+    const events:Array<CueEvent<C>> = [];
+    for(let i = fromCue + 1; i <= toCue; i++) {
+      const cueData: C | null = this.cueData[i] || null;
+      const time = this.cues[i] / this.tempoBPS;
+      const event: CueEvent<C> = {
+        time,
+        beat: this.cues[i],
+        data: cueData,
+        cue: i,
+        drag: currentBeat - this.cues[i],
+      };
+      events.push(event);
+    }
+
+    return events;
+  }
+
   private getClickEvents(fromBeat: number, toBeat: number, toTime: number): Array<ClickEvent> {
 
+    // We are assuming a backwards scrub happened, so we won't produce any events
+    // In some cases, this might mean we looped back to the beginning.
     if(fromBeat > toBeat) {
-      // We are assuming a backwards scrub happened, so we won't produce any events
-      // In some cases, this might mean we looped back to the beginning.
       return [];
     }
 
