@@ -1,3 +1,7 @@
-export type ClickTrackEventClickName = "beat";// | "bar" | "track" | "start" | "stop";
-export type ClickTrackEventCueName = "cue";
-export type ClickTrackEventName = ClickTrackEventClickName | ClickTrackEventCueName;
+import { CueEvent } from "./cue-event";
+import { ClickEvent } from "./click-event";
+
+export type EventTypeMap<C> = {
+  cue: CueEvent<C>;
+  beat: ClickEvent;
+}

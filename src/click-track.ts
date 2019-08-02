@@ -6,7 +6,7 @@ import { BasicTimer } from './basic-timer';
 import { CueSequenceLean } from './definitions/cue-sequence';
 import { separateCueSequence } from './cue-utils';
 import { BaseClickTrackOptions, ClickTrackOptionVariants } from './definitions/click-track-options';
-import { ClickTrackEventClickName, ClickTrackEventName, ClickTrackEventCueName } from './definitions/click-track-event-names';
+import { EventTypeMap } from './definitions/click-track-event-names';
 import { UniversalTimer } from './universal-timer';
 
 // C represents the type of data to be used for cue events
@@ -23,7 +23,7 @@ export class ClickTrack<C = any> {
   private previousBeat: number = -1;
   private currentCue: number = -1;
   private previousCue: number = -1;
-  private events = new EventList<ClickTrack<C>, CueEvent<C> | ClickEvent>();
+  private events = new EventList<this, any>();
 
   constructor(options: BaseClickTrackOptions<C> & ClickTrackOptionVariants) {
 
@@ -74,26 +74,19 @@ export class ClickTrack<C = any> {
     this.timer.onUpdate(this.setTime.bind(this));
   }
 
-  private dispatch(event: ClickTrackEventClickName, arg: ClickEvent): void;
-  private dispatch(event: ClickTrackEventCueName, arg: CueEvent<C>): void;
-  private dispatch(event: ClickTrackEventName, arg: ClickEvent | CueEvent<C>): void {
+  private dispatch<K extends Extract<keyof EventTypeMap<C>, string>>(event: K, arg: EventTypeMap<C>[K]) {
     this.events.get(event).dispatchAsync(this, arg);
   }
 
   // Adds event listener
-  on(event: ClickTrackEventClickName, fn: IEventHandler<ClickTrack<C>, ClickEvent>): void;
-  on(event: ClickTrackEventCueName, fn: IEventHandler<ClickTrack<C>, CueEvent<C>>): void;
-  on(event: ClickTrackEventName, fn: CallableFunction): void {
-    // @TODO - avoid type assertion here.
-    this.events.get(event).subscribe(fn as IEventHandler<ClickTrack<C>, CueEvent<C> | ClickEvent>);
+  on<K extends Extract<keyof EventTypeMap<C>, string>>(event: K, fn: IEventHandler<this, EventTypeMap<C>[K]>): void {
+    this.events.get(event).subscribe(fn);
   }
 
   // Removes event listener
-  off(event: ClickTrackEventClickName, fn: IEventHandler<ClickTrack<C>, ClickEvent>): void;
-  off(event: ClickTrackEventCueName, fn: IEventHandler<ClickTrack<C>, CueEvent<C>>): void;
-  off(event: ClickTrackEventName, fn: CallableFunction): void {
+  off<K extends Extract<keyof EventTypeMap<C>, string>>(event: K, fn: IEventHandler<this, EventTypeMap<C>[K]>): void {
     // @TODO - avoid type assertion here.
-    this.events.get(event).unsubscribe(fn as IEventHandler<ClickTrack<C>, CueEvent<C> | ClickEvent>);
+    this.events.get(event).unsubscribe(fn);
   }
 
   // Sets the time in seconds
