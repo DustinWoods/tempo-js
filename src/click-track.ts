@@ -85,7 +85,6 @@ export class ClickTrack<C = any> {
 
   // Removes event listener
   off<K extends Extract<keyof EventTypeMap<C>, string>>(event: K, fn: IEventHandler<this, EventTypeMap<C>[K]>): void {
-    // @TODO - avoid type assertion here.
     this.events.get(event).unsubscribe(fn);
   }
 
