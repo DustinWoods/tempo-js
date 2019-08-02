@@ -24,7 +24,7 @@ Create JavaScript event emitter in browser for a click track. Specify tempo and 
  - [x] Option to sync with html5 audio or video
  - [x] Option to sync with youtube iframe player
  - [ ] Include source maps in dist
- - [ ] Cue tracks
+ - [x] Cue tracks
  - [x] Include minified/targeted build
  - [ ] Add calibration loop (begin anticipating the delay in code execution)
  - [ ] Slave/master tracks to sync timers or media
