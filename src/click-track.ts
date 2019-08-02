@@ -149,7 +149,8 @@ export class ClickTrack<C = any> {
   private getClickEvents(fromBeat: number, toBeat: number, toTime: number): Array<ClickEvent> {
 
     if(fromBeat > toBeat) {
-      // @TODO - check if track has looped on itself
+      // We are assuming a backwards scrub happened, so we won't produce any events
+      // In some cases, this might mean we looped back to the beginning.
       return [];
     }
 
