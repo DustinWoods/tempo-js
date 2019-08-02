@@ -74,6 +74,7 @@ export class ClickTrack<C = any> {
     this.timer.onUpdate(this.setTime.bind(this));
   }
 
+  // Dispatches event data
   private dispatch<K extends Extract<keyof EventTypeMap<C>, string>>(event: K, arg: EventTypeMap<C>[K]) {
     this.events.get(event).dispatchAsync(this, arg);
   }
