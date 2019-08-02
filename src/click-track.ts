@@ -101,7 +101,7 @@ export class ClickTrack<C = any> {
     // Process beat events only if listeners are listening
     if(this.events.get("beat").count) {
       // Get all events that occurred between prior click and current click
-      const clickEvents = this.getClickEvents(this.previousBeat, this.currentBeat, offsetTime);
+      const clickEvents = this.getClickEvents(this.previousBeat, this.currentBeat);
 
       // Loop through clicksBetween and dispatch
       for(let i = 0; i < clickEvents.length; i++) {
@@ -185,7 +185,7 @@ export class ClickTrack<C = any> {
     return events;
   }
 
-  private getClickEvents(fromBeat: number, toBeat: number, toTime: number): Array<ClickEvent> {
+  private getClickEvents(fromBeat: number, toBeat: number): Array<ClickEvent> {
 
     // We are assuming a backwards scrub happened, so we won't produce any events
     // In some cases, this might mean we looped back to the beginning.
