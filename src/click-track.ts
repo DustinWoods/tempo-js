@@ -51,6 +51,7 @@ export class ClickTrack<C = any> {
       this.cueData = cueData;
     }
 
+    // Setup timer
     if(isTimer(options.timerSource)) {
       // Custom timer
       this.timer = options.timerSource;
@@ -64,6 +65,7 @@ export class ClickTrack<C = any> {
       }
 
     } else if(typeof options.timerSource === "function") {
+      // universal timer using function
       this.timer = new UniversalTimer(options.timerSource);
 
     } else {
@@ -71,6 +73,7 @@ export class ClickTrack<C = any> {
 
     }
 
+    // Bind the tick event
     this.timer.onUpdate(this.setTime.bind(this));
   }
 
