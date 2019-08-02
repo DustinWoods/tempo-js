@@ -14,21 +14,11 @@ Create JavaScript event emitter in browser for a click track. Specify tempo and 
  - Sync with YouTube player
 
 ### TODO
- - [x] Remove dependencies (rxjs)
  - [ ] Tests
- - [x] Implement event triggers for beats and bars
  - [ ] Implement event triggers for start/stop/repeat click track
- - [x] Parameter for track offset
- - [x] Add built-in ticker
- - [x] Add support for custom ticker
- - [x] Option to sync with html5 audio or video
- - [x] Option to sync with youtube iframe player
  - [ ] Include source maps in dist
- - [x] Cue tracks
- - [x] Include minified/targeted build
  - [ ] Add calibration loop (begin anticipating the delay in code execution)
  - [ ] Slave/master tracks to sync timers or media
- - [x] Handle @TODO's
  - [ ] Publish code examples
    - [ ] Metronome
    - [ ] Rhythm game
@@ -38,3 +28,13 @@ Create JavaScript event emitter in browser for a click track. Specify tempo and 
    - [ ] Basic cue mapping tool
  - [ ] Tempo maps for varying tempos
  - [ ] Readme documentation
+ - [x] Remove dependencies (rxjs)
+ - [x] Implement event triggers for beats and bars
+ - [x] Parameter for track offset
+ - [x] Add built-in ticker
+ - [x] Add support for custom ticker
+ - [x] Option to sync with html5 audio or video
+ - [x] Option to sync with youtube iframe player
+ - [x] Cue tracks
+ - [x] Include minified/targeted build
+ - [x] Handle @TODO's
