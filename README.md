@@ -28,6 +28,7 @@ Create JavaScript event emitter in browser for a click track. Specify tempo and 
 ```javascript
   const track = new ClickTrack({
     autostart: true,
+    // Tempo defaults to 60
   });
 
   track.on('beat', (e) => {
@@ -38,6 +39,7 @@ Create JavaScript event emitter in browser for a click track. Specify tempo and 
 ```
 
 **Basic cues**
+When the default tempo is 60, the cues are synonymous with seconds
 ```javascript
   const track = new ClickTrack({
     cues: [1, 3, 5, 7],
@@ -63,10 +65,11 @@ Create JavaScript event emitter in browser for a click track. Specify tempo and 
     console.log(e.beat);
   });
 
-  // Outputs 1, 2, 3, 4 at 0.5 second, 1.5 seconds, 2.5 seconds, and then 3.5 seconds
+  // Outputs 1, 2, 3, 4 at 0.5 second (beat 1), 1.5 seconds (beat 3), 2.5 seconds (beat 5), and then 3.5 seconds (beat 7)
 ```
 
 **Basic cues with data**
+To pass data with each cue, use tuples for each cue.
 ```javascript
   const track = new ClickTrack({
     cues: [[1, "A"], [3, "B"], [5, "C"], [7, "D"]],
@@ -78,7 +81,7 @@ Create JavaScript event emitter in browser for a click track. Specify tempo and 
     console.log(e.data);
   });
 
-  // Outputs "A", "B", "C", "D" at 0.5 second, 1.5 seconds, 2.5 seconds, and then 3.5 seconds
+  // Outputs "A", "B", "C", "D" at 0.5 second (beat 1), 1.5 seconds (beat 3), 2.5 seconds (beat 5), and then 3.5 seconds (beat 7)
 ```
 
 ### TODO
