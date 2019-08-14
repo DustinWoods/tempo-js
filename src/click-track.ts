@@ -13,7 +13,6 @@ import { UniversalTimer } from './universal-timer';
 export class ClickTrack<C = any> {
   readonly tempo: number = 60;
   private tempoBPS: number = 1;
-  readonly beats: number = 4;
   readonly offset: number = 0;
   readonly length: number = Infinity;
   readonly timer: ITimer;
@@ -34,10 +33,6 @@ export class ClickTrack<C = any> {
       }
       this.tempo = options.tempo;
       this.tempoBPS = this.tempo / 60;
-    }
-
-    if(options.beats !== undefined) {
-      this.beats = options.beats;
     }
 
     if(options.offset !== undefined) {
@@ -85,6 +80,14 @@ export class ClickTrack<C = any> {
   // Removes event listener
   off<K extends Extract<keyof EventTypeMap<C>, string>>(event: K, fn: IEventHandler<this, EventTypeMap<C>[K]>): void {
     this.events.get(event).unsubscribe(fn);
+  }
+
+  start() {
+    if(this.timer instanceof BasicTimer) {
+      this.timer.start();
+    } else {
+      throw new Error('Click must be master to support start()');
+    }
   }
 
   // Sets the time in seconds

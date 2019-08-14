@@ -5,7 +5,6 @@ export type BaseClickTrackOptions<C> = {
   tempo?: number;
   cues?: CueSequence<C>;
   offset?: number;
-  beats?: number;
 }
 
 export type ClickTrackOptionVariants = {
