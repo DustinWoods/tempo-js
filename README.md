@@ -1,14 +1,16 @@
-## Click Tracks for your JavaScript
+# Click Tracks for your JavaScript
+A light-weight utility for emitting events that are in-time with music.
 
-**WIP - Still in early development**
+## Description
+The main export is a constructor that can be called with differently based on use-case. Some examples are:
+ - Emit events for every beat timed with an audio/video source
+ - Emit events for every beat with out a source
+ - Emit events at defined cues, like music notation
 
-### Description
-Create JavaScript event emitter in browser for a click track. Specify tempo and time signature. Get event for each beat or each bar. Use built-in timer or specify your own. Sync timer with HTML5 audio.
-
-### Install
+## Install
 `npm i click-track`
 
-### Usage
+## Usage
 
 **Basic timer running at 120 bpm**
 ```javascript
@@ -84,7 +86,7 @@ To pass data with each cue, use tuples for each cue.
   // Outputs "A", "B", "C", "D" at 0.5 second (beat 1), 1.5 seconds (beat 3), 2.5 seconds (beat 5), and then 3.5 seconds (beat 7)
 ```
 
-### TODO
+## TODO
  - [ ] Slave/master tracks to sync timers or media
  - [ ] Implement events for start/stop/repeat click track
  - [ ] Tests
