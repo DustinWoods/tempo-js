@@ -14,11 +14,11 @@ Create JavaScript event emitter in browser for a click track. Specify tempo and 
  - Sync with YouTube player
 
 ### TODO
+ - [ ] Slave/master tracks to sync timers or media
+ - [ ] Implement events for start/stop/repeat click track
  - [ ] Tests
- - [ ] Implement event triggers for start/stop/repeat click track
  - [ ] Include source maps in dist
  - [ ] Add calibration loop (begin anticipating the delay in code execution)
- - [ ] Slave/master tracks to sync timers or media
  - [ ] Publish code examples
    - [ ] Metronome
    - [ ] Rhythm game
