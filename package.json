@@ -32,7 +32,7 @@
   "author": "Dustin Woods <dustin@whatup.email>",
   "license": "MIT",
   "dependencies": {
-    "ste-events": "^1.5.2"
+    "ste-events": "^1.6.2"
   },
   "devDependencies": {
     "http-server": "^0.11.1",

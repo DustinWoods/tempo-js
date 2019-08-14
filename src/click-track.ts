@@ -1,4 +1,4 @@
-import { EventList, IEventHandler } from 'ste-events';
+import { IEventHandler, NonUniformEventList } from 'ste-events';
 import { ClickEvent } from './definitions/click-event';
 import { CueEvent } from './definitions/cue-event';
 import { isTimer, ITimer } from './definitions/timer';
@@ -23,7 +23,7 @@ export class ClickTrack<C = any> {
   private previousBeat: number = -1;
   private currentCue: number = -1;
   private previousCue: number = -1;
-  private events = new EventList<this, any>();
+  private events = new NonUniformEventList<this, EventTypeMap<C>>();
 
   constructor(options: BaseClickTrackOptions<C> & ClickTrackOptionVariants) {
 
