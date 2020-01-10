@@ -1,6 +1,6 @@
 {
   "name": "click-track",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "JavaScript utility for click track events.",
   "typings": "./dist/main.d.ts",
   "main": "dist/click-track.cjs.js",
@@ -32,7 +32,7 @@
   "author": "Dustin Woods <dustin@whatup.email>",
   "license": "MIT",
   "dependencies": {
-    "ste-events": "^1.6.2"
+    "ste-events": "^1.6.3"
   },
   "devDependencies": {
     "http-server": "^0.11.1",
@@ -43,6 +43,6 @@
     "rollup-plugin-uglify": "^6.0.2",
     "ts-node": "^8.3.0",
     "tslib": "^1.10.0",
-    "typescript": "^3.5.2"
+    "typescript": "^3.7.4"
   }
 }

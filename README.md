@@ -87,7 +87,7 @@ To pass data with each cue, use tuples for each cue.
 ```
 
 ## TODO
- - [ ] Upgrade typescript dep
+ - [x] Upgrade typescript dep
  - [ ] Slave/master tracks to sync timers or media
  - [ ] Implement events for start/stop/repeat click track
  - [ ] Tests
