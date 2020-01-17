@@ -1,6 +1,6 @@
 {
   "name": "click-track",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "JavaScript utility for click track events.",
   "typings": "./dist/index.d.ts",
   "main": "dist/click-track.cjs.js",
