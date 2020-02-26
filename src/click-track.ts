@@ -112,6 +112,10 @@ export class ClickTrack<C = any> {
     }
   }
 
+  get beat(): number {
+    return this.currentBeat;
+  }
+
   private tickCueEvents(fromBeat: number, toBeat: number): void {
 
     // Start scanning for current cue from previous cue, only if track moved forward. Otherwise scan from the beginning.
