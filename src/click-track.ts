@@ -165,6 +165,12 @@ export class ClickTrack<C = any> {
         drag: toBeat - this.cues[i],
       };
       this.events.get("cue").dispatchAsync(this, event);
+      if(i === 0) {
+        this.events.get("firstCue").dispatchAsync(this, event);
+      }
+      if(i === this.cues.length - 1) {
+        this.events.get("lastCue").dispatchAsync(this, event);
+      }
     }
   }
 
