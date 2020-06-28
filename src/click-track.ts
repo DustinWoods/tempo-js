@@ -107,7 +107,7 @@ export class ClickTrack<C = any> {
     }
 
     // Process cue events only if cues exist and listeners are listening
-    if(this.cues && this.events.get("cue").count) {
+    if(this.cues && (this.events.get("cue").count || this.events.get("firstCue").count || this.events.get("lastCue").count)) {
       this.tickCueEvents(this.previousBeat, this.currentBeat);
     }
   }
