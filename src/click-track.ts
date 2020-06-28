@@ -16,6 +16,7 @@ export class ClickTrack<C = any> {
   readonly offset: number = 0;
   readonly length: number = Infinity;
   readonly timer: ITimer;
+  private hasOwnTimer: boolean = false;
   private cues: CueSequenceLean = [];
   private cueData: Array<C> = [];
   private currentBeat: number = -1;
@@ -55,6 +56,7 @@ export class ClickTrack<C = any> {
     } else if(options.timerSource === undefined) {
       // Basic timer
       this.timer = new BasicTimer(options.autostart, options.length, options.loop);
+      this.hasOwnTimer = true;
       if(options.length !== undefined) {
         this.length = options.length;
       }
@@ -62,6 +64,7 @@ export class ClickTrack<C = any> {
     } else if(typeof options.timerSource === "function") {
       // universal timer using function
       this.timer = new UniversalTimer(options.timerSource);
+      this.hasOwnTimer = true;
 
     } else {
       throw new Error('Constructing ClickTrack: Unknown value type for timerSource option.');
@@ -88,6 +91,15 @@ export class ClickTrack<C = any> {
     } else {
       throw new Error('Click must be master to support start()');
     }
+  }
+
+  deconstruct(): void {
+    this.timer.offUpdate(this.setTime.bind(this));
+    if(this.hasOwnTimer) {
+      this.timer.deconstruct();
+    }
+    delete this.cues;
+    delete this.cueData;
   }
 
   // Sets the time in seconds
