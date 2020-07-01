@@ -24,6 +24,9 @@ export class ClickTrack<C = any> {
   private currentCue: number = -1;
   private previousCue: number = -1;
   private events = new NonUniformEventList<this, EventTypeMap<C>>();
+  private dragSamples: Array<number> = new Array();
+  private fixDrag: boolean = false;
+  private dragOffset: number = 0;
 
   constructor(options: BaseClickTrackOptions<C> & ClickTrackOptionVariants) {
 
@@ -38,6 +41,11 @@ export class ClickTrack<C = any> {
 
     if(options.offset !== undefined) {
       this.offset = options.offset;
+    }
+
+    if(options.fixDrag) {
+      this.fixDrag = true;
+      this.dragSamples = new Array(10).fill(0);
     }
 
     // Setup cues and cue data
@@ -78,6 +86,14 @@ export class ClickTrack<C = any> {
   // Adds event listener
   on<K extends Extract<keyof EventTypeMap<C>, string>>(event: K, fn: IEventHandler<this, EventTypeMap<C>[K]>): void {
     this.events.get(event).subscribe(fn);
+  }
+
+  // Adds event listener to only handle once
+  once<K extends Extract<keyof EventTypeMap<C>, string>>(event: K, fn: IEventHandler<this, EventTypeMap<C>[K]>): void {
+    this.events.get(event).subscribe((...args) => {
+      this.events.get(event).unsubscribe(fn);
+      fn.apply(this, args);
+    });
   }
 
   // Removes event listener
@@ -139,7 +155,7 @@ export class ClickTrack<C = any> {
       // Start iteration at current cue marker, but if less than 0 (-1) then start counter at 0
       calcCue = Math.max(0, calcCueFrom);
       // Iterate until cue marker is greater than current time, or until no more cues
-      this.cues[calcCue] < toBeat && calcCue < this.cues.length;
+      this.cues[calcCue] < toBeat + this.dragOffset && calcCue < this.cues.length;
       // Increment by one
       calcCue++
     );
@@ -169,12 +185,17 @@ export class ClickTrack<C = any> {
     for(let i = this.previousCue + 1; i <= this.currentCue; i++) {
       const cueData: C | null = this.cueData[i] || null;
       const time = this.cues[i] / this.tempoBPS;
+      const drag = toBeat - this.cues[i];
+      if(this.fixDrag) {
+        this.dragSamples.unshift(drag);
+        this.dragSamples.pop();
+      }
       const event: CueEvent<C> = {
         time,
         beat: this.cues[i],
         data: cueData,
         cue: i,
-        drag: toBeat - this.cues[i],
+        drag,
       };
       this.events.get("cue").dispatchAsync(this, event);
       if(i === 0) {
@@ -183,6 +204,11 @@ export class ClickTrack<C = any> {
       if(i === this.cues.length - 1) {
         this.events.get("lastCue").dispatchAsync(this, event);
       }
+    }
+
+    if(this.fixDrag) {
+      // Get average offset, but keep it between -1 and 1
+      this.dragOffset = Math.min(1, Math.max(-1, this.dragSamples.reduce((a,c) => a + c, 0) / this.dragSamples.length / 2));
     }
   }
 
