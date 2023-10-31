@@ -88,7 +88,7 @@ To pass data with each cue, use tuples for each cue.
 
 ## TODO
  - [x] Upgrade typescript dep
- - [ ] Slave/master tracks to sync timers or media
+ - [ ] Sceondary/primary tracks to sync timers or media
  - [ ] Implement events for start/stop/repeat click track
  - [ ] Tests
  - [ ] Include source maps in dist
