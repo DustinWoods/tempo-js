@@ -9,8 +9,8 @@ The main export is a constructor that can be called with differently based on us
 
 ## Examples
  - https://codepen.io/AshWoods/pen/XLvZzX
- - https://codepen.io/AshWoods/pen/zVVVMJ
- - https://codepen.io/AshWoods/pen/rERbby
+ - https://codepen.io/AshWoods/pen/zVVVMJ (warnong: flashing colors)
+ - https://codepen.io/AshWoods/pen/rERbby (warnong: flashing colors)
 
 ## Install
 `npm i click-track`
