@@ -7,6 +7,11 @@ The main export is a constructor that can be called with differently based on us
  - Emit events for every beat with out a source
  - Emit events at defined cues, like music notation
 
+## Examples
+ - https://codepen.io/AshWoods/pen/XLvZzX
+ - https://codepen.io/AshWoods/pen/zVVVMJ
+ - https://codepen.io/AshWoods/pen/rERbby
+
 ## Install
 `npm i click-track`
 
@@ -88,7 +93,7 @@ To pass data with each cue, use tuples for each cue.
 
 ## TODO
  - [x] Upgrade typescript dep
- - [ ] Sceondary/primary tracks to sync timers or media
+ - [ ] Secondary/primary tracks to sync timers or media
  - [ ] Implement events for start/stop/repeat click track
  - [ ] Tests
  - [ ] Include source maps in dist
@@ -96,8 +101,8 @@ To pass data with each cue, use tuples for each cue.
  - [ ] Publish code examples
    - [ ] Metronome
    - [ ] Rhythm game
-   - [ ] YouTube video
-   - [ ] Cues for tweening
+   - [x] YouTube video
+   - [x] Cues for tweening
    - [ ] Cues without tempo (ie 60bpm)
    - [ ] Basic cue mapping tool
  - [ ] Tempo maps for varying tempos
